@@ -43,10 +43,10 @@ server_history="/tmp/bash_chat"
 movement(){
     stty -echo
     echo -e "\e[1A"
-    read -n 1 -t 1 option
+    read -s -n 1 -t 1 option
     while [[ "$option" != "w" && "$option" != "a"  && "$option" != "s" && "$option" != "d" && "$option" != "e" ]]; do
 	echo -e "\e[1A"
-	read -n 1 -t 1 option
+	read -s -n 1 -t 1 option
 	if [[ $state == "chatRoom" ]]; then
 	    refreshChat
 	fi
@@ -63,7 +63,7 @@ signUpView(){
     width=$(($(tput cols)-1))
     height=$(($(tput lines)-1))
     color="White"
-    user="Loser"
+    user="Guest"
     
     #MENU
     subMenuFormWidth=41
@@ -302,6 +302,11 @@ signUpView(){
 #
 
 ChatRoomView(){
+
+    eval c='$'${color}
+
+    echo -e "${c}${user}${NC} entered the chat" >> $server_history
+    
     #TERMINAL
     width=$(($(tput cols)-1))
     height=$(($(tput lines)-3))
@@ -416,12 +421,11 @@ ChatRoomView(){
 	    e) if [[ "$microstate" == "write" ]]; then
 		   message=""
 		   echo -e "\e[4A"
-		   read -n $((${width}-14)) -p "$(echo -e "\e[2C" )" message
+		   read -p "$(echo -e "\e[2C" )" message
 		   echo -e "\e[$1B"
 	       elif [[ "$microstate" == "enter" && -n $message ]]; then
-		   eval c='$'${color}
 		   echo -e "${c}${user}${NC} > ${message}" >> $server_history
-		   message=""
+		  # message=""
 	       fi
 	       ;;
 	esac   
@@ -434,7 +438,7 @@ refreshChat(){
 
     chatInputs=$((${height}-7))
     clearLine="││"
-    i=2
+    i=4
     while [[ $i -lt $width ]]; do
 	clearLine="${clearLine} "
 	((i++))

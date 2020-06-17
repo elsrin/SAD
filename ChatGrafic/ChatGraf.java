@@ -134,7 +134,7 @@ public class ChatGraf extends JFrame implements ActionListener{
         inp.setLayout(new BoxLayout(inp, BoxLayout.LINE_AXIS));
         inputField = new JTextField();
         button = new JButton("Enviar");
-        button.addActionListener(this);
+        button.addActionListener(this); //button is listening
         inp.add(inputField);
         inp.add(button);
         // Listen to events from the inputField button.

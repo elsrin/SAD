@@ -58,14 +58,14 @@ public class ClientOutput2 extends Thread {
         String line;
         try {
             while ((line = cg.getSocket().readLine()) != null) {
-                if (line.endsWith("joined.")) {
-                    addNick(line.substring(0));
+                if (line.startsWith("/User ")) {
+                    addNick(line.substring(6));
                 } else {
-                    if (line.endsWith("left.")) {
-                        removeNick(line.substring(0));
+                    if (line.startsWith("/Bye ")) {
+                        removeNick(line.substring(5));
                     } else {
                         if (line.startsWith("/update ")) {
-                            String[] nicks = line.substring(0).split("\\s");
+                            String[] nicks = line.substring(8).split("\\s");
                             removeNick(nicks[0]);
                             addNick(nicks[1]);
                         } else {

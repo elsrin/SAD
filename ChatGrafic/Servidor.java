@@ -38,13 +38,13 @@ public class Servidor extends Thread {
         try {
             String initialNick = getClientNick(socket);
             // Notifiquem la unió del client a tothom
-            sendBroadcast(initialNick + " has joined.");
+            sendBroadcast("/User " + initialNick);
             // notifiquem al nou client dels clients que hi ha.
             Iterator<String> nicks = diccionari.values().iterator();
             while (nicks.hasNext()) {
                 String nick = nicks.next();
                 if (!initialNick.equals(nick)) { // don't notify ourselves
-                    socket.println(nick+" is in the chat.");
+                    socket.println("/User " + nick);
                 }
             }
             // process commands and messages
@@ -66,7 +66,7 @@ public class Servidor extends Thread {
             diccionari.remove(socket);
             socket.close();
             // notifiquem a tots de la desconnexio del client.
-            sendBroadcast(nick + " has left.");
+            sendBroadcast("/Bye " + nick);
         } catch (Exception e) {
             e.printStackTrace();
         }

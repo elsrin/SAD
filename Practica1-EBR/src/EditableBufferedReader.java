@@ -19,11 +19,11 @@ public class EditableBufferedReader extends BufferedReader{
     }
     
     public void setRaw() throws InterruptedException, IOException{
-        Runtime.getRuntime().exec("stty -echo raw").waitFor();
+        Runtime.getRuntime().exec("stty -icanon min 1 -echo raw < /dev/tty").waitFor();
     }
     
     public void unsetRaw() throws InterruptedException, IOException{
-        Runtime.getRuntime().exec("stty echo -raw").waitFor();
+        Runtime.getRuntime().exec("stty -icanon min 1 echo -raw < /dev/tty").waitFor();
     }
     
     public int read() throws IOException{
@@ -55,7 +55,6 @@ public class EditableBufferedReader extends BufferedReader{
     }
 
     public String readLine() throws IOException {
-        
         try {
             this.setRaw();
         } catch (InterruptedException ex) {

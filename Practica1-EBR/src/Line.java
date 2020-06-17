@@ -26,9 +26,10 @@ public class Line extends Observable{
         return line.length();
     }
     
-    /*public char getChar(int i){
-        return line.get(i);
-    }*/
+    public char getChar(int i){
+        return line.charAt(i);
+        //return line.get(i);
+    }
     
     public void addChar(char c){
         line.insert(index, c);

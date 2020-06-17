@@ -40,9 +40,9 @@ public class EditableBufferedReader extends BufferedReader implements KeyListene
                     .log(Level.SEVERE, null, ex);
         }
         int c=-1;
-        if ((c = System.in.read()) == Codis.ESC){
-            if ((c=System.in.read()) == '[' ){
-                switch (c = System.in.read()){
+        if ((c = readChar()) == Codis.ESC){
+            if ((c=readChar()) == '[' ){
+                switch (c = readChar()){
                     case 'C':
                         c=Codis.DRETA;
                     break;
@@ -61,7 +61,7 @@ public class EditableBufferedReader extends BufferedReader implements KeyListene
                     break;
                 }
             }
-        }
+        } 
         try {
             this.unsetRaw();
         } catch (InterruptedException ex) {
@@ -69,6 +69,27 @@ public class EditableBufferedReader extends BufferedReader implements KeyListene
         }
         return c;
     }
+    
+    public int readChar() throws IOException{
+        int c=-1;
+        try {
+            this.setRaw();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(EditableBufferedReader.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        while (true){
+            if ( System.in.available() != 0 ) {
+                c = System.in.read();
+                break;
+            }
+        }
+        try {
+            this.unsetRaw();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(EditableBufferedReader.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return c;
+    } 
 
     public String readLine() throws IOException {
         
@@ -146,5 +167,4 @@ public class EditableBufferedReader extends BufferedReader implements KeyListene
     @Override
     public void keyReleased(KeyEvent e) {
     }
-
 }

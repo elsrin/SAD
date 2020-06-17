@@ -1,9 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 
 import java.io.IOException;
 import java.util.Observer;
@@ -11,10 +5,6 @@ import java.util.Observable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- *
- * @author gcabanyes
- */
 public class Console implements Observer{
     private Line line;
     
@@ -25,16 +15,16 @@ public class Console implements Observer{
     @Override
     public void update(Observable o, Object arg){
         try {
-            Runtime.getRuntime().exec("cls");
+            Runtime.getRuntime().exec("clear");
         } catch (IOException ex) {
             Logger.getLogger(Console.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        }/*
         for (int i=0;i <= line.getSize();i++){     
             if (i != line.getIndex())
                 System.out.print(line.getChar(i));
             else
-                 System.out.print('│');   
-        }   
+                 System.out.print('│');
+        }*/
     }
     
 }

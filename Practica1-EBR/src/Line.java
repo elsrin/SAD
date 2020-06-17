@@ -1,12 +1,7 @@
 
-
 import java.util.Observable;
 import java.util.ArrayList;
 
-/**
- *
- * @author lsadusr26
- */
 public class Line extends Observable{
     public ArrayList<Character> line;
     public int index;
@@ -15,7 +10,7 @@ public class Line extends Observable{
     public Line() {
         this.ins = false;
         this.index=0;
-        line = new ArrayList();
+        line = new ArrayList<Character>();
     }
     
     public int getIndex(){
@@ -45,7 +40,6 @@ public class Line extends Observable{
         if (index!=0){
             line.remove(index);
             index--;
-            
         }
         setChanged();
         notifyObservers((Integer) Codis.BACKSPACE);
@@ -56,6 +50,7 @@ public class Line extends Observable{
             line.remove(index+1);
         }
         setChanged();
+        notifyObservers((Integer)Codis.DELETE);
     }
     
     public void insert(){
@@ -83,20 +78,20 @@ public class Line extends Observable{
             index--;
         }
         setChanged();
+        notifyObservers((Integer)Codis.LEFT);
     } 
     
     public void moveFirst(){
         index=0;
         setChanged();
+        notifyObservers((Integer)Codis.HOME);
      } 
     
     public void moveFinal(){
         index=getSize();
         setChanged();
+        notifyObservers((Integer)Codis.END);
     } 
-    
-    /*public void moveUp(){}
-    public void moveDown(){}*/
     
     public void move(int i){
         index=i;

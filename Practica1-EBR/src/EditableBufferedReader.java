@@ -1,4 +1,6 @@
 
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.Reader;
 import java.io.BufferedReader;
 import java.lang.Runtime;
@@ -6,7 +8,8 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class EditableBufferedReader extends BufferedReader{ 
+public class EditableBufferedReader extends BufferedReader implements KeyListener{
+    
     Line l;
     Console c;
     Reader red;
@@ -19,20 +22,26 @@ public class EditableBufferedReader extends BufferedReader{
     }
     
     public void setRaw() throws InterruptedException, IOException{
-        Runtime.getRuntime().exec("stty -icanon min 1 -echo raw < /dev/tty").waitFor();
+        Runtime.getRuntime().exec(
+                "stty -icanon min 1 -echo raw < /dev/tty").waitFor();
     }
     
     public void unsetRaw() throws InterruptedException, IOException{
-        Runtime.getRuntime().exec("stty -icanon min 1 echo -raw < /dev/tty").waitFor();
+        Runtime.getRuntime().exec(
+                "stty -icanon min 1 echo -raw < /dev/tty").waitFor();
     }
     
     public int read() throws IOException{
-        int c=super.read();
-        if ( c == Codis.ESCAPE ){
-            c=super.read();
-            if ( c == '[' ){
-                c=super.read();
-                switch (c){
+        try {
+            this.setRaw();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(EditableBufferedReader.class.getName())
+                    .log(Level.SEVERE, null, ex);
+        }
+        int c=-1;
+        if ((c = System.in.read()) == Codis.ESCAPE){
+            if ((c=System.in.read()) == '[' ){
+                switch (c = System.in.read()){
                     case 'C':
                         c=Codis.RIGHT;
                     break;
@@ -51,20 +60,20 @@ public class EditableBufferedReader extends BufferedReader{
                 }
             }
         }
+        try {
+            this.unsetRaw();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(EditableBufferedReader.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return c;
     }
 
     public String readLine() throws IOException {
-        try {
-            this.setRaw();
-        } catch (InterruptedException ex) {
-            Logger.getLogger(EditableBufferedReader.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        l.addObserver(c);
         boolean readMore = true;
         while (readMore){
-            System.out.print("New Char:");
-            int c = this.read();
-            switch (c){
+            int car;
+            switch (car = read()){
                 case Codis.BACKSPACE:
                     l.delChar();
                     break;
@@ -86,23 +95,48 @@ public class EditableBufferedReader extends BufferedReader{
                 case Codis.EOI:
                     readMore=false;
                     break;
+                case 10:
+                    readMore=false;
+                    break;
+                case 13:
+                    readMore=false;
+                    break;
                 default:
                     if (l.getMode())
-                        l.reWrite((char)c);
+                        l.reWrite((char)car);
                     else
-                        l.addChar((char)c);
+                        l.addChar((char)car);
                     break;
             }
         }
-        try {
-            this.unsetRaw();
-        } catch (InterruptedException ex) {
-            Logger.getLogger(EditableBufferedReader.class.getName()).log(Level.SEVERE, null, ex);
-        }
         return l.getLine();
-        
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+        if (e.getSource().equals(e.VK_RIGHT)){
+            l.moveRight();
+        }
+        if (e.getSource().equals(e.VK_LEFT)){
+            l.moveLeft();
+        }
+        if (e.getSource().equals(e.VK_HOME)){
+            l.moveFirst();
+        }
+        if (e.getSource().equals(e.VK_END)){
+            l.moveFinal();
+        }
+        if (e.getSource().equals(e.VK_INSERT)){
+            l.insert();
+        }
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
     }
 
 }
-
-

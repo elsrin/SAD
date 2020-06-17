@@ -8,6 +8,7 @@ import java.lang.Thread;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
+import com.sun.glass.events.KeyEvent;
 
 public class ChatGraf extends JFrame implements ActionListener{
 
@@ -49,27 +50,19 @@ public class ChatGraf extends JFrame implements ActionListener{
         new ClientOutput2(this).start();
     }
 
+    @Override
     public void actionPerformed(ActionEvent event) {
         // Gets the text from inputField (clearing it afterwards), adds the 
         // message to the text area and writes it to the socket to send it
         // to the server
         String message = inputField.getText();
         
-        if (event.getActionCommand().equals(button)) {
-            String mssg = inputField.getText();
+        if (event.getSource().equals(button)) {
+            setInputField("");
             try {
-                sc.println(mssg);
-            } catch (Exception ex) {
-                Logger.getLogger(ChatGraf.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        int esc = 0x1B; //ESC of the keyboard
-        if (event.getActionCommand().equals(esc)) {
-            int respuesta = JOptionPane.showConfirmDialog(this,
-                    "Esta seguro que desea salir?", "Confirmar",
-                    JOptionPane.YES_NO_OPTION);
-            if (respuesta == JOptionPane.YES_NO_OPTION) {
-                System.exit(0);
+                sc.println(message);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         } else {
             setInputField("");
@@ -79,7 +72,37 @@ public class ChatGraf extends JFrame implements ActionListener{
                 e.printStackTrace();
             }
         }
+        inputField.addKeyListener(new KeyListener() {
+            //se ejecuta cuando se presiona una tecla
+            @Override
+            public void keyTyped(java.awt.event.KeyEvent e) {
+            }
+
+            //se ejecuta cuando se suelta una tecla
+            @Override
+            public void keyPressed(java.awt.event.KeyEvent e) {
+                if (e.getSource() == inputField) {
+                    if (e.VK_ESCAPE == e.getKeyCode()) {
+                        int respuesta = JOptionPane.showConfirmDialog(rootPane,
+                                "Esta seguro que desea salir?", "Confirmación",
+                                JOptionPane.YES_NO_OPTION);
+                        if (respuesta == JOptionPane.YES_NO_OPTION) {
+                            System.exit(0);
+                        }
+                    }
+                }
+            }
+
+            /* funcionará solo cuando se presionan caracteres, si se
+             * presionan teclas como F1, F2, inicio etc no ejecutará ningun evento */
+            @Override
+            public void keyReleased(java.awt.event.KeyEvent e) {
+            }
+
+        });
     }
+    
+  
 
     private void GUI() throws Exception {
         //Set the look and feel.
@@ -111,6 +134,7 @@ public class ChatGraf extends JFrame implements ActionListener{
         inp.setLayout(new BoxLayout(inp, BoxLayout.LINE_AXIS));
         inputField = new JTextField();
         button = new JButton("Enviar");
+        button.addActionListener(this);
         inp.add(inputField);
         inp.add(button);
         // Listen to events from the inputField button.

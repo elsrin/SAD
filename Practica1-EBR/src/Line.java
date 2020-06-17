@@ -3,14 +3,15 @@ import java.util.Observable;
 import java.util.ArrayList;
 
 public class Line extends Observable{
-    public ArrayList<Character> line;
+    
+    public StringBuffer line;
     public int index;
     public boolean ins;
 
     public Line() {
         this.ins = false;
         this.index=0;
-        line = new ArrayList<Character>();
+        line = new StringBuffer();
     }
     
     public int getIndex(){
@@ -22,15 +23,15 @@ public class Line extends Observable{
     }
     
     public int getSize(){
-        return line.size();
+        return line.length();
     }
     
-    public char getChar(int i){
+    /*public char getChar(int i){
         return line.get(i);
-    }
+    }*/
     
     public void addChar(char c){
-        line.add(index, c);
+        line.insert(index, c);
         index++; 
         setChanged();
         notifyObservers((Integer)((int)c));
@@ -38,29 +39,29 @@ public class Line extends Observable{
     
     public void delChar(){
         if (index!=0){
-            line.remove(index);
+            line.deleteCharAt(index-1);
             index--;
         }
         setChanged();
-        notifyObservers((Integer) Codis.BACKSPACE);
+        notifyObservers((Integer) Codis.BACK);
     }
     
     public void suprChar(){
-        if (index < line.size()){
-            line.remove(index+1);
+        if (index < line.length()){
+            line.deleteCharAt(index);
         }
         setChanged();
-        notifyObservers((Integer)Codis.DELETE);
+        notifyObservers((Integer)Codis.DEL);
     }
     
     public void insert(){
         ins=!ins;
         setChanged();
-        notifyObservers((Integer) Codis.INSERT);
+        notifyObservers((Integer) Codis.INS);
     }
     
     public void reWrite(char c){
-        line.set(index, c);
+        line.setCharAt(index, c);
         setChanged();
         notifyObservers((Integer)((int)c));
     }
@@ -70,7 +71,7 @@ public class Line extends Observable{
             index++;
         }
         setChanged();
-        notifyObservers((Integer)Codis.RIGHT);
+        notifyObservers((Integer)Codis.DRETA);
     }
     
     public void moveLeft(){
@@ -78,19 +79,19 @@ public class Line extends Observable{
             index--;
         }
         setChanged();
-        notifyObservers((Integer)Codis.LEFT);
+        notifyObservers((Integer)Codis.ESQUERRE);
     } 
     
     public void moveFirst(){
         index=0;
         setChanged();
-        notifyObservers((Integer)Codis.HOME);
+        notifyObservers((Integer)Codis.PPI);
      } 
     
     public void moveFinal(){
         index=getSize();
         setChanged();
-        notifyObservers((Integer)Codis.END);
+        notifyObservers((Integer)Codis.FI);
     } 
     
     public void move(int i){

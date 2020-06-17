@@ -19,6 +19,7 @@ public class EditableBufferedReader extends BufferedReader implements KeyListene
         this.red=red;
         this.l = new Line();
         this.c = new Console(this.l);
+        l.addObserver(c);
     }
     
     public void setRaw() throws InterruptedException, IOException{
@@ -39,23 +40,24 @@ public class EditableBufferedReader extends BufferedReader implements KeyListene
                     .log(Level.SEVERE, null, ex);
         }
         int c=-1;
-        if ((c = System.in.read()) == Codis.ESCAPE){
+        if ((c = System.in.read()) == Codis.ESC){
             if ((c=System.in.read()) == '[' ){
                 switch (c = System.in.read()){
                     case 'C':
-                        c=Codis.RIGHT;
+                        c=Codis.DRETA;
                     break;
                     case 'D':
-                        c=Codis.LEFT;
+                        c=Codis.ESQUERRE;
                     break;
                     case 'H':
-                        c=Codis.HOME;
+                        c=Codis.PPI;
                     break;
                     case '3':
-                        c=Codis.DELETE;
+                        System.in.read();
+                        c=Codis.DEL;
                     break;
                     case '4':
-                        c=Codis.END;
+                        c=Codis.FI;
                     break;
                 }
             }
@@ -69,27 +71,27 @@ public class EditableBufferedReader extends BufferedReader implements KeyListene
     }
 
     public String readLine() throws IOException {
-        l.addObserver(c);
+        
         boolean readMore = true;
         while (readMore){
             int car;
             switch (car = read()){
-                case Codis.BACKSPACE:
+                case Codis.BACK:
                     l.delChar();
                     break;
-                case Codis.DELETE:
+                case Codis.DEL:
                     l.suprChar();
                     break;
-                case Codis.HOME:
+                case Codis.PPI:
                     l.moveFirst();
                     break;
-                case Codis.END:
+                case Codis.FI:
                     l.moveFinal();
                     break;
-                case Codis.LEFT:
+                case Codis.ESQUERRE:
                     l.moveLeft();
                     break;
-                case Codis.RIGHT:
+                case Codis.DRETA:
                     l.moveRight();
                     break;
                 case Codis.EOI:
@@ -128,6 +130,12 @@ public class EditableBufferedReader extends BufferedReader implements KeyListene
         }
         if (e.getSource().equals(e.VK_INSERT)){
             l.insert();
+        }
+        if (e.getSource().equals(e.VK_DELETE)){
+            l.suprChar();
+        }
+        if (e.getSource().equals(e.VK_BACK_SPACE)){
+            l.delChar();
         }
     }
 
